@@ -8,8 +8,8 @@
   <link href="../../../../../css/ionic.bundle.css" rel="stylesheet">
   <link href="../../../../../scripts/testing/styles.css" rel="stylesheet">
   <script src="../../../../../scripts/testing/scripts.js"></script>
-  <script src="../../../../../dist/ionic.js"></script>
-</head>
+  <script nomodule src="../../../../../dist/ionic/ionic.js"></script>
+  <script type="module" src="../../../../../dist/ionic/ionic.esm.js"></script></head>
 
 <body>
   <ion-app>
@@ -75,6 +75,13 @@
             <ion-radio id="dangerRadio" slot="end" color="danger" value="broccoli" checked></ion-radio>
           </ion-item>
         </ion-radio-group>
+        
+        <ion-radio-group allow-empty-selection>
+          <ion-item>
+            <ion-label>Custom</ion-label>
+            <ion-radio slot="end" color="danger" value="custom" style="--border-radius:2px;--inner-border-radius: 10px 0px 10px 0px;" checked></ion-radio>
+          </ion-item>
+        </ion-radio-group>
 
         <ion-item>
           <ion-button slot="start" onClick="toggleBoolean('grapeChecked', 'checked')" fill="outline" size="small">Checked</ion-button>
@@ -89,7 +96,9 @@
 
       <ion-list>
         <ion-list-header>
-          No Radio Group
+          <ion-label>
+            No Radio Group
+          </ion-label>
         </ion-list-header>
         <ion-item>
           <ion-label>Kiwi, (ionChange) Secondary color</ion-label>

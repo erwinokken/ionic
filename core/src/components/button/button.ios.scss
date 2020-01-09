@@ -68,6 +68,11 @@
   --background-focused: #{ion-color(primary, base, .1)};
   --color-activated: #{ion-color(primary, base)};
   --color-focused: #{ion-color(primary, base)};
+
+  font-size: #{$button-ios-clear-font-size};
+  font-weight: #{$button-ios-clear-font-weight};
+
+  letter-spacing: #{$button-ios-clear-letter-spacing};
 }
 
 
@@ -127,7 +132,21 @@
     --opacity: #{$button-ios-opacity-hover};
   }
 
-  :host(.button-clear:hover) {
+  :host(.button-clear:hover),
+  :host(.button-outline:hover) {
     --opacity: #{$button-ios-clear-opacity-hover};
+  }
+
+  // Since iOS changes the opacity on hover,
+  // we want to keep the background if focused
+  // or activated
+  :host(.ion-focused:hover) {
+    --background-hover: var(--background-focused);
+    --color-hover: var(--color-focused);
+  }
+
+  :host(.activated:hover) {
+    --background-hover: var(--background-activated);
+    --color-hover: var(--color-activated);
   }
 }
