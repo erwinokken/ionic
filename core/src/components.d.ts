@@ -21,21 +21,20 @@ import {
   DatetimeChangeEventDetail,
   DatetimeOptions,
   DomRenderFn,
+  FooterHeightFn,
   FrameworkDelegate,
   HeaderFn,
+  HeaderHeightFn,
   InputChangeEventDetail,
   ItemHeightFn,
   ItemRenderFn,
   ItemReorderEventDetail,
   LoadingOptions,
   MenuChangeEventDetail,
-  MenuControllerI,
   ModalOptions,
-  Mode,
   NavComponent,
   NavOptions,
   OverlayEventDetail,
-  OverlaySelect,
   PickerButton,
   PickerColumn,
   PickerOptions,
@@ -121,7 +120,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the action sheet did dismiss.
     */
@@ -140,7 +139,7 @@ export namespace Components {
     */
     'subHeader'?: string;
     /**
-    * If `true`, the action sheet will be translucent. Only applies when the mode is `"ios"` and the device supports backdrop-filter.
+    * If `true`, the action sheet will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -212,7 +211,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the alert did dismiss.
     */
@@ -231,7 +230,7 @@ export namespace Components {
     */
     'subHeader'?: string;
     /**
-    * If `true`, the alert will be translucent.
+    * If `true`, the alert will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -253,20 +252,6 @@ export namespace Components {
     */
     'getTop': () => Promise<HTMLIonAlertElement | undefined>;
   }
-  interface IonAnchor {
-    /**
-    * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
-    */
-    'color'?: Color;
-    /**
-    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
-    */
-    'href'?: string;
-    /**
-    * When using a router, it specifies the transition direction when navigating to another page using `href`.
-    */
-    'routerDirection': RouterDirection;
-  }
   interface IonApp {}
   interface IonAvatar {}
   interface IonBackButton {
@@ -279,17 +264,25 @@ export namespace Components {
     */
     'defaultHref'?: string;
     /**
+    * If `true`, the user cannot interact with the button.
+    */
+    'disabled': boolean;
+    /**
     * The icon name to use for the back button.
     */
     'icon'?: string | null;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The text to display in the back button.
     */
     'text'?: string | null;
+    /**
+    * The type of the button.
+    */
+    'type': 'submit' | 'reset' | 'button';
   }
   interface IonBackdrop {
     /**
@@ -313,7 +306,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonButton {
     /**
@@ -329,6 +322,10 @@ export namespace Components {
     */
     'disabled': boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download': string | undefined;
+    /**
     * Set to `"block"` for a full-width button or to `"full"` for a full-width button without left and right borders.
     */
     'expand'?: 'full' | 'block';
@@ -339,11 +336,15 @@ export namespace Components {
     /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href': string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
@@ -361,26 +362,67 @@ export namespace Components {
     */
     'strong': boolean;
     /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
+    /**
     * The type of the button.
     */
     'type': 'submit' | 'reset' | 'button';
   }
-  interface IonButtons {}
+  interface IonButtons {
+    /**
+    * If true, buttons will disappear when its parent toolbar has fully collapsed if the toolbar is not the first toolbar. If the toolbar is the first toolbar, the buttons will be hidden and will only be shown once all toolbars have fully collapsed.  Only applies in `ios` mode with `collapse` set to `true` on `ion-header`.  Typically used for [Collapsible Large Titles](https://ionicframework.com/docs/api/title#collapsible-large-titles)
+    */
+    'collapse': boolean;
+  }
   interface IonCard {
+    /**
+    * If `true`, a button tag will be rendered and the card will be tappable.
+    */
+    'button': boolean;
     /**
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
     'color'?: Color;
     /**
+    * If `true`, the user cannot interact with the card.
+    */
+    'disabled': boolean;
+    /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download': string | undefined;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href': string | undefined;
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
+    /**
+    * When using a router, it specifies the transition direction when navigating to another page using `href`.
+    */
+    'routerDirection': RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
+    /**
+    * The type of the button. Only used when an `onclick` or `button` property is present.
+    */
+    'type': 'submit' | 'reset' | 'button';
   }
   interface IonCardContent {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCardHeader {
     /**
@@ -390,9 +432,9 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the card header will be translucent.
+    * If `true`, the card header will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -404,7 +446,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCardTitle {
     /**
@@ -414,7 +456,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCheckbox {
     /**
@@ -436,7 +478,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -454,7 +496,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Display an outline style button.
     */
@@ -660,7 +702,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Full names for each month name. This can be used to provide locale month names. Defaults to English.
     */
@@ -742,13 +784,21 @@ export namespace Components {
     */
     'disabled': boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download': string | undefined;
+    /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href': string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
@@ -762,7 +812,11 @@ export namespace Components {
     */
     'size'?: 'small';
     /**
-    * If `true`, the fab button will be translucent.
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
+    /**
+    * If `true`, the fab button will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
     /**
@@ -784,9 +838,9 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the footer will be translucent. Note: In order to scroll content behind the footer, the `fullscreen` attribute needs to be set on the content.
+    * If `true`, the footer will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).  Note: In order to scroll content behind the footer, the `fullscreen` attribute needs to be set on the content.
     */
     'translucent': boolean;
   }
@@ -798,11 +852,15 @@ export namespace Components {
   }
   interface IonHeader {
     /**
+    * Describes the scroll effect that will be applied to the header `condense` only applies in iOS mode.  Typically used for [Collapsible Large Titles](https://ionicframework.com/docs/api/title#collapsible-large-titles)
+    */
+    'collapse'?: 'condense';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the header will be translucent. Note: In order to scroll content behind the header, the `fullscreen` attribute needs to be set on the content.
+    * If `true`, the header will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).  Note: In order to scroll content behind the header, the `fullscreen` attribute needs to be set on the content.
     */
     'translucent': boolean;
   }
@@ -812,7 +870,7 @@ export namespace Components {
     */
     'alt'?: string;
     /**
-    * The image URL. This attribute is mandatory for the <img> element.
+    * The image URL. This attribute is mandatory for the `<img>` element.
     */
     'src'?: string;
   }
@@ -890,9 +948,9 @@ export namespace Components {
     */
     'getInputElement': () => Promise<HTMLInputElement>;
     /**
-    * A hint to the browser for which keyboard to display. This attribute applies when the value of the type attribute is `"text"`, `"password"`, `"email"`, or `"url"`. Possible values are: `"verbatim"`, `"latin"`, `"latin-name"`, `"latin-prose"`, `"full-width-latin"`, `"kana"`, `"katakana"`, `"numeric"`, `"tel"`, `"email"`, `"url"`.
+    * A hint to the browser for which keyboard to display. Possible values: `"none"`, `"text"`, `"tel"`, `"url"`, `"email"`, `"numeric"`, `"decimal"`, and `"search"`.
     */
-    'inputmode'?: string;
+    'inputmode'?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     /**
     * The maximum value, which must not be less than its minimum (min attribute) value.
     */
@@ -912,7 +970,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * If `true`, the user can enter more than one value. This attribute applies when the type attribute is set to `"email"` or `"file"`, otherwise it is ignored.
     */
@@ -984,9 +1042,13 @@ export namespace Components {
     */
     'disabled': boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download': string | undefined;
+    /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href': string | undefined;
     /**
     * How the bottom border should be displayed on the item.
     */
@@ -994,11 +1056,19 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
     'routerDirection': RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
     /**
     * The type of the button. Only used when an `onclick` or `button` property is present.
     */
@@ -1012,7 +1082,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * When it's set to `true`, the item-divider will stay visible when it reaches the top of the viewport until the next `ion-item-divider` replaces it.  This feature relies in `position:sticky`: https://caniuse.com/#feat=css-sticky
     */
@@ -1029,17 +1099,33 @@ export namespace Components {
     */
     'disabled': boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download': string | undefined;
+    /**
     * If `true`, the option will expand to take up the available width and cover any other options.
     */
     'expandable': boolean;
     /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href': string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
+    /**
+    * The type of the button.
+    */
+    'type': 'submit' | 'reset' | 'button';
   }
   interface IonItemOptions {
     'fireSwipeEvent': () => Promise<void>;
@@ -1058,7 +1144,7 @@ export namespace Components {
     */
     'closeOpened': () => Promise<boolean>;
     /**
-    * If `true`, the user cannot interact with the sliding-item.
+    * If `true`, the user cannot interact with the sliding item.
     */
     'disabled': boolean;
     /**
@@ -1069,6 +1155,11 @@ export namespace Components {
     * Get the ratio of the open amount of the item compared to the width of the options. If the number returned is positive, then the options on the right side are open. If the number returned is negative, then the options on the left side are open. If the absolute value of the number is greater than 1, the item is open more than the width of the options.
     */
     'getSlidingRatio': () => Promise<number>;
+    /**
+    * Open the sliding item.
+    * @param side The side of the options to open. If a side is not provided, it will open the first set of options it finds within the item.
+    */
+    'open': (side: "start" | "end" | undefined) => Promise<void>;
   }
   interface IonLabel {
     /**
@@ -1078,7 +1169,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The position determines where and how the label behaves inside an item.
     */
@@ -1100,7 +1191,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonListHeader {
     /**
@@ -1108,9 +1199,13 @@ export namespace Components {
     */
     'color'?: Color;
     /**
+    * How the bottom border should be displayed on the list header.
+    */
+    'lines'?: 'full' | 'inset' | 'none';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonLoading {
     /**
@@ -1154,7 +1249,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the loading did dismiss.
     */
@@ -1177,7 +1272,7 @@ export namespace Components {
     */
     'spinner'?: SpinnerTypes | null;
     /**
-    * If `true`, the loading indicator will be translucent.
+    * If `true`, the loading indicator will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -1201,8 +1296,7 @@ export namespace Components {
   }
   interface IonMenu {
     /**
-    * Close the menu. Returns `false` if the menu is already closed or it can't be closed.
-    * @param animated If `true`, the menu will animate on close.
+    * Closes the menu. If the menu is already closed or it can't be closed, it returns `false`.
     */
     'close': (animated?: boolean) => Promise<boolean>;
     /**
@@ -1214,11 +1308,11 @@ export namespace Components {
     */
     'disabled': boolean;
     /**
-    * Get whether or not the menu is active. Returns `true` if the menu is active.  A menu is active when it can be opened or closed, meaning it's enabled and it's not part of an `ion-split-pane`.
+    * Returns `true` is the menu is active.  A menu is active when it can be opened or closed, meaning it's enabled and it's not part of a `ion-split-pane`.
     */
     'isActive': () => Promise<boolean>;
     /**
-    * Get whether or not the menu is open. Returns `true` if the menu is open.
+    * Returns `true` is the menu is open.
     */
     'isOpen': () => Promise<boolean>;
     /**
@@ -1230,14 +1324,11 @@ export namespace Components {
     */
     'menuId'?: string;
     /**
-    * Open the menu. Returns `false` if the menu is already open or it can't be opened.
-    * @param animated If `true`, the menu will animate on open.
+    * Opens the menu. If the menu is already open or it can't be opened, it returns `false`.
     */
     'open': (animated?: boolean) => Promise<boolean>;
     /**
-    * Sets the menu to open or closed. Returns `false` if the operation can't be completed successfully.
-    * @param shouldOpen If `true`, the menu should open.
-    * @param animated If `true`, the menu will animate on open and close.
+    * Opens or closes the button. If the operation can't be completed successfully, it returns `false`.
     */
     'setOpen': (shouldOpen: boolean, animated?: boolean) => Promise<boolean>;
     /**
@@ -1249,12 +1340,11 @@ export namespace Components {
     */
     'swipeGesture': boolean;
     /**
-    * Toggle the menu open or closed. If the menu is already open, it will try to close the menu, otherwise it will try to open it. Returns `false` if the operation can't be completed successfully.
-    * @param animated If `true`, the menu will animate on open and close.
+    * Toggles the menu. If the menu is already open, it will try to close, otherwise it will try to open it. If the operation can't be completed successfully, it returns `false`.
     */
     'toggle': (animated?: boolean) => Promise<boolean>;
     /**
-    * The animation type of the menu. Available options: `"overlay"`, `"reveal"`, `"push"`. Custom animations can be registered by the menu controller.
+    * The display type of the menu. Available options: `"overlay"`, `"reveal"`, `"push"`.
     */
     'type'?: string;
   }
@@ -1268,16 +1358,19 @@ export namespace Components {
     */
     'color'?: Color;
     /**
+    * If `true`, the user cannot interact with the menu button.
+    */
+    'disabled': boolean;
+    /**
     * Optional property that maps to a Menu's `menuId` prop. Can also be `start` or `end` for the menu side. This is used to find the correct menu to toggle
     */
     'menu'?: string;
     /**
-    * The mode determines which platform styles to use.
+    * The type of the button.
     */
-    'mode': Mode;
+    'type': 'submit' | 'reset' | 'button';
   }
   interface IonMenuController {
-    '_getInstance': () => Promise<MenuControllerI>;
     /**
     * Close the menu. If a menu is specified, it will close that menu. If no menu is specified, then it will close any menu that is open. If it does not find any open menus, it will return `false`.
     * @param menu The menuId or side of the menu to close.
@@ -1392,7 +1485,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the modal did dismiss.
     */
@@ -1407,9 +1500,17 @@ export namespace Components {
     */
     'present': () => Promise<void>;
     /**
+    * The element that presented the modal. This is used for card presentation effects and for stacking multiple modals on top of each other. Only applies in iOS mode.
+    */
+    'presentingElement'?: HTMLElement;
+    /**
     * If `true`, a backdrop will be displayed behind the modal.
     */
     'showBackdrop': boolean;
+    /**
+    * If `true`, the modal can be swiped to dismiss. Only applies in iOS mode.
+    */
+    'swipeToClose': boolean;
   }
   interface IonModalController {
     /**
@@ -1534,32 +1635,25 @@ export namespace Components {
     * @param done The transition complete function.
     */
     'setRoot': <T extends NavComponent>(component: T, componentProps?: ComponentProps<T> | null | undefined, opts?: NavOptions | null | undefined, done?: TransitionDoneFn | undefined) => Promise<boolean>;
-    'setRouteId': (id: string, params: { [key: string]: any; } | undefined, direction: RouterDirection) => Promise<RouteWrite>;
+    'setRouteId': (id: string, params: ComponentProps<null> | undefined, direction: RouterDirection) => Promise<RouteWrite>;
     /**
     * If the nav component should allow for swipe-to-go-back.
     */
     'swipeGesture'?: boolean;
   }
-  interface IonNavPop {}
-  interface IonNavPush {
+  interface IonNavLink {
     /**
-    * Component to navigate to
+    * Component to navigate to. Only used if the `routerDirection` is `"forward"` or `"root"`.
     */
     'component'?: NavComponent;
     /**
-    * Data you want to pass to the component as props
+    * Data you want to pass to the component as props. Only used if the `"routerDirection"` is `"forward"` or `"root"`.
     */
     'componentProps'?: ComponentProps;
-  }
-  interface IonNavSetRoot {
     /**
-    * Component you want to make root for the navigation stack
+    * The transition direction when navigating to another page.
     */
-    'component'?: NavComponent;
-    /**
-    * Data you want to pass to the component as props
-    */
-    'componentProps'?: ComponentProps;
+    'routerDirection': RouterDirection;
   }
   interface IonNote {
     /**
@@ -1569,7 +1663,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonPicker {
     /**
@@ -1622,7 +1716,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the picker did dismiss.
     */
@@ -1712,7 +1806,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the popover did dismiss.
     */
@@ -1731,7 +1825,7 @@ export namespace Components {
     */
     'showBackdrop': boolean;
     /**
-    * If `true`, the popover will be translucent.
+    * If `true`, the popover will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -1765,7 +1859,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * If true, reverse the progress bar direction.
     */
@@ -1795,7 +1889,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -1847,7 +1941,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -1879,7 +1973,7 @@ export namespace Components {
     */
     'cancel': () => Promise<void>;
     /**
-    * Time it takes to close the refresher.
+    * Time it takes to close the refresher. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'closeDuration': string;
     /**
@@ -1895,23 +1989,27 @@ export namespace Components {
     */
     'getProgress': () => Promise<number>;
     /**
-    * The maximum distance of the pull until the refresher will automatically go into the `refreshing` state. Defaults to the result of `pullMin + 60`.
+    * How much to multiply the pull speed by. To slow the pull animation down, pass a number less than `1`. To speed up the pull, pass a number greater than `1`. The default value is `1` which is equal to the speed of the cursor. If a negative value is passed in, the factor will be `1` instead.  For example: If the value passed is `1.2` and the content is dragged by `10` pixels, instead of `10` pixels the content will be pulled by `12` pixels (an increase of 20 percent). If the value passed is `0.8`, the dragged amount will be `8` pixels, less than the amount the cursor has moved.  Does not apply when the refresher content uses a spinner, enabling the native refresher.
+    */
+    'pullFactor': number;
+    /**
+    * The maximum distance of the pull until the refresher will automatically go into the `refreshing` state. Defaults to the result of `pullMin + 60`. Does not apply when  the refresher content uses a spinner, enabling the native refresher.
     */
     'pullMax': number;
     /**
-    * The minimum distance the user must pull down until the refresher will go into the `refreshing` state.
+    * The minimum distance the user must pull down until the refresher will go into the `refreshing` state. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'pullMin': number;
     /**
-    * Time it takes the refresher to to snap back to the `refreshing` state.
+    * Time it takes the refresher to to snap back to the `refreshing` state. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'snapbackDuration': string;
   }
   interface IonRefresherContent {
     /**
-    * A static icon to display when you begin to pull down
+    * A static icon or a spinner to display when you begin to pull down. A spinner name can be provided to gradually show tick marks when pulling down on iOS devices.
     */
-    'pullingIcon'?: string | null;
+    'pullingIcon'?: SpinnerTypes | string | null;
     /**
     * The text you want to display when you begin to pull down. `pullingText` can accept either plaintext or HTML as a string. To display characters normally reserved for HTML, they must be escaped. For example `<Ionic>` would become `&lt;Ionic&gt;`  For more information: [Security Documentation](https://ionicframework.com/docs/faq/security)
     */
@@ -1977,7 +2075,7 @@ export namespace Components {
     /**
     * Go back to previous page in the window.history.
     */
-    'back': () => Promise<void | undefined>;
+    'back': () => Promise<void>;
     'navChanged': (direction: RouterDirection) => Promise<boolean>;
     'printDebug': () => Promise<void>;
     /**
@@ -1995,6 +2093,28 @@ export namespace Components {
     */
     'useHash': boolean;
   }
+  interface IonRouterLink {
+    /**
+    * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
+    */
+    'color'?: Color;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href': string | undefined;
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
+    /**
+    * When using a router, it specifies the transition direction when navigating to another page using `href`.
+    */
+    'routerDirection': RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
+  }
   interface IonRouterOutlet {
     /**
     * If `true`, the router-outlet should animate the transition of components.
@@ -2007,8 +2127,11 @@ export namespace Components {
     'commit': (enteringEl: HTMLElement, leavingEl: HTMLElement | undefined, opts?: RouterOutletOptions | undefined) => Promise<boolean>;
     'delegate'?: FrameworkDelegate;
     'getRouteId': () => Promise<RouteID | undefined>;
-    'mode': Mode;
-    'setRouteId': (id: string, params: { [key: string]: any; } | undefined, direction: RouterDirection) => Promise<RouteWrite>;
+    /**
+    * The mode determines which platform styles to use.
+    */
+    'mode': "ios" | "md";
+    'setRouteId': (id: string, params: ComponentProps<null> | undefined, direction: RouterDirection) => Promise<RouteWrite>;
     'swipeHandler'?: SwipeGestureHandler;
   }
   interface IonRow {}
@@ -2026,7 +2149,7 @@ export namespace Components {
     */
     'autocorrect': 'on' | 'off';
     /**
-    * Set the cancel button icon. Only applies to `md` mode.
+    * Set the cancel button icon. Only applies to `md` mode. Defaults to `"arrow-back-sharp"`.
     */
     'cancelButtonIcon': string;
     /**
@@ -2034,7 +2157,7 @@ export namespace Components {
     */
     'cancelButtonText': string;
     /**
-    * Set the clear icon. Defaults to `"close-circle"` for `ios` and `"close"` for `md`.
+    * Set the clear icon. Defaults to `"close-circle"` for `ios` and `"close-sharp"` for `md`.
     */
     'clearIcon'?: string;
     /**
@@ -2054,25 +2177,29 @@ export namespace Components {
     */
     'getInputElement': () => Promise<HTMLInputElement>;
     /**
+    * A hint to the browser for which keyboard to display. Possible values: `"none"`, `"text"`, `"tel"`, `"url"`, `"email"`, `"numeric"`, `"decimal"`, and `"search"`.
+    */
+    'inputmode'?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Set the input's placeholder. `placeholder` can accept either plaintext or HTML as a string. To display characters normally reserved for HTML, they must be escaped. For example `<Ionic>` would become `&lt;Ionic&gt;`  For more information: [Security Documentation](https://ionicframework.com/docs/faq/security)
     */
     'placeholder': string;
     /**
-    * The icon to use as the search icon.
+    * The icon to use as the search icon. Defaults to `"search-outline"` in `ios` mode and `"search-sharp"` in `md` mode.
     */
-    'searchIcon': string;
+    'searchIcon'?: string;
     /**
     * Sets focus on the specified `ion-searchbar`. Use this method instead of the global `input.focus()`.
     */
     'setFocus': () => Promise<void>;
     /**
-    * If `true`, show the cancel button.
+    * Sets the behavior for the cancel button. Defaults to `"never"`. Setting to `"focus"` shows the cancel button on focus. Setting to `"never"` hides the cancel button. Setting to `"always"` shows the cancel button regardless of focus state.
     */
-    'showCancelButton': boolean;
+    'showCancelButton': 'never' | 'focus' | 'always';
     /**
     * If `true`, enable spellcheck on the input.
     */
@@ -2098,7 +2225,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * If `true`, the segment buttons will overflow and the user can swipe to see them.
     */
@@ -2124,7 +2251,11 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * The type of the button.
+    */
+    'type': 'submit' | 'reset' | 'button';
     /**
     * The value of the segment button.
     */
@@ -2154,7 +2285,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * If `true`, the select can accept multiple values.
     */
@@ -2171,7 +2302,7 @@ export namespace Components {
     * Open the select overlay. The overlay is either an alert, action sheet, or popover, depending on the `interface` property on the `ion-select`.
     * @param event The user interface event that called the open.
     */
-    'open': (event?: UIEvent | undefined) => Promise<HTMLIonActionSheetElement | HTMLIonAlertElement | HTMLIonPopoverElement | undefined>;
+    'open': (event?: UIEvent | undefined) => Promise<any>;
     /**
     * The text to display when the select is empty.
     */
@@ -2189,7 +2320,7 @@ export namespace Components {
     /**
     * Additional classes to apply for custom CSS. If multiple classes are provided they should be separated by spaces.
     */
-    'class'?: string | { [className: string]: boolean; } | undefined;
+    'customCssClass'?: string | { [className: string]: boolean; } | undefined;
     /**
     * If `true`, the user cannot interact with the select option.
     */
@@ -2226,10 +2357,6 @@ export namespace Components {
     * If `true`, the skeleton text will animate.
     */
     'animated': boolean;
-    /**
-    * @deprecated - Use CSS instead. The width of the skeleton text. If supplied, it will override the CSS style.
-    */
-    'width'?: string;
   }
   interface IonSlide {}
   interface IonSlides {
@@ -2241,6 +2368,10 @@ export namespace Components {
     * Get the index of the previous slide.
     */
     'getPreviousIndex': () => Promise<number>;
+    /**
+    * Get the Swiper instance. Use this to access the full Swiper API. See https://idangero.us/swiper/api/ for all API options.
+    */
+    'getSwiper': () => Promise<any>;
     /**
     * Get whether or not the current slide is the first slide.
     */
@@ -2271,7 +2402,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Options to pass to the swiper instance. See http://idangero.us/swiper/api/ for valid options
     */
@@ -2341,7 +2472,7 @@ export namespace Components {
   }
   interface IonSplitPane {
     /**
-    * The content `id` of the split-pane's main content. This property can be used instead of the `[main]` attribute to select the `main` content of the split-pane.
+    * The content `id` of the split-pane's main content.
     */
     'contentId'?: string;
     /**
@@ -2377,25 +2508,29 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The selected tab component
     */
     'selectedTab'?: string;
     /**
-    * If `true`, the tab bar will be translucent.
+    * If `true`, the tab bar will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
   interface IonTabButton {
     /**
-    * The selected tab component
+    * If `true`, the user cannot interact with the tab button.
     */
     'disabled': boolean;
     /**
-    * The URL which will be used as the `href` within this tab's button anchor.
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
     */
-    'href'?: string;
+    'download': string | undefined;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href': string | undefined;
     /**
     * Set the layout of the text and icon in the tab bar. It defaults to `'icon-top'`.
     */
@@ -2403,7 +2538,11 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel': string | undefined;
     /**
     * The selected tab component
     */
@@ -2412,6 +2551,10 @@ export namespace Components {
     * A tab id must be provided for each `ion-tab`. It's used internally to reference the selected tab or by the router to switch between them.
     */
     'tab'?: string;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target': string | undefined;
   }
   interface IonTabs {
     'getRouteId': () => Promise<RouteID | undefined>;
@@ -2440,9 +2583,13 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonTextarea {
+    /**
+    * If `true`, the element height will increase based on the value.
+    */
+    'autoGrow': boolean;
     /**
     * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.
     */
@@ -2486,7 +2633,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -2530,6 +2677,10 @@ export namespace Components {
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
     'color'?: Color;
+    /**
+    * The size of the toolbar title.
+    */
+    'size'?: 'large' | 'small';
   }
   interface IonToast {
     /**
@@ -2540,10 +2691,6 @@ export namespace Components {
     * An array of buttons for the toast.
     */
     'buttons'?: (ToastButton | string)[];
-    /**
-    * Text to display in the close button.
-    */
-    'closeButtonText'?: string;
     /**
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
@@ -2585,7 +2732,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * Returns a promise that resolves when the toast did dismiss.
     */
@@ -2604,11 +2751,7 @@ export namespace Components {
     */
     'present': () => Promise<void>;
     /**
-    * If `true`, the close button will be displayed.
-    */
-    'showCloseButton': boolean;
-    /**
-    * If `true`, the toast will be translucent.
+    * If `true`, the toast will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent': boolean;
   }
@@ -2646,7 +2789,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -2664,7 +2807,7 @@ export namespace Components {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode': Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonVirtualScroll {
     /**
@@ -2680,24 +2823,30 @@ export namespace Components {
     */
     'approxItemHeight': number;
     /**
-    * Marks the tail of the items array as dirty, so they can be re-rendered. It's equivalent to calling `checkRange(length)` where `length` is the total length of the items.
+    * This method marks the tail the items array as dirty, so they can be re-rendered.  It's equivalent to calling:  ```js virtualScroll.checkRange(lastItemLen); ```
     */
     'checkEnd': () => Promise<void>;
     /**
-    * Marks a subset of the items as dirty so they can be re-rendered. Items should be marked as dirty any time the content or their style changes.  The subset of items to be updated are specified by an offset and a length. If a length is not provided it will check all of the items beginning at the offset.
-    * @param offset The index of the item to start marking dirty.
-    * @param length The number of items to mark dirty.
+    * This method marks a subset of items as dirty, so they can be re-rendered. Items should be marked as dirty any time the content or their style changes.  The subset of items to be updated can are specifing by an offset and a length.
     */
-    'checkRange': (offset: number, length?: number) => Promise<void>;
+    'checkRange': (offset: number, len?: number) => Promise<void>;
     'domRender'?: DomRenderFn;
     /**
     * Section footers and the data used within its given template can be dynamically created by passing a function to `footerFn`. The logic within the footer function can decide if the footer template should be used, and what data to give to the footer template. The function must return `null` if a footer cell shouldn't be created.
     */
     'footerFn'?: HeaderFn;
     /**
+    * An optional function that maps each item footer within their height.
+    */
+    'footerHeight'?: FooterHeightFn;
+    /**
     * Section headers and the data used within its given template can be dynamically created by passing a function to `headerFn`. For example, a large list of contacts usually has dividers between each letter in the alphabet. App's can provide their own custom `headerFn` which is called with each record within the dataset. The logic within the header function can decide if the header template should be used, and what data to give to the header template. The function must return `null` if a header cell shouldn't be created.
     */
     'headerFn'?: HeaderFn;
+    /**
+    * An optional function that maps each item header within their height.
+    */
+    'headerHeight'?: HeaderHeightFn;
     /**
     * An optional function that maps each item within their height. When this function is provides, heavy optimizations and fast path can be taked by `ion-virtual-scroll` leading to massive performance improvements.  This function allows to skip all DOM reads, which can be Doing so leads to massive performance
     */
@@ -2712,7 +2861,6 @@ export namespace Components {
     'nodeRender'?: ItemRenderFn;
     /**
     * Returns the position of the virtual item at the given index.
-    * @param index The index of the item.
     */
     'positionForItem': (index: number) => Promise<number>;
     /**
@@ -2755,12 +2903,6 @@ declare global {
   var HTMLIonAlertControllerElement: {
     prototype: HTMLIonAlertControllerElement;
     new (): HTMLIonAlertControllerElement;
-  };
-
-  interface HTMLIonAnchorElement extends Components.IonAnchor, HTMLStencilElement {}
-  var HTMLIonAnchorElement: {
-    prototype: HTMLIonAnchorElement;
-    new (): HTMLIonAnchorElement;
   };
 
   interface HTMLIonAppElement extends Components.IonApp, HTMLStencilElement {}
@@ -3033,22 +3175,10 @@ declare global {
     new (): HTMLIonNavElement;
   };
 
-  interface HTMLIonNavPopElement extends Components.IonNavPop, HTMLStencilElement {}
-  var HTMLIonNavPopElement: {
-    prototype: HTMLIonNavPopElement;
-    new (): HTMLIonNavPopElement;
-  };
-
-  interface HTMLIonNavPushElement extends Components.IonNavPush, HTMLStencilElement {}
-  var HTMLIonNavPushElement: {
-    prototype: HTMLIonNavPushElement;
-    new (): HTMLIonNavPushElement;
-  };
-
-  interface HTMLIonNavSetRootElement extends Components.IonNavSetRoot, HTMLStencilElement {}
-  var HTMLIonNavSetRootElement: {
-    prototype: HTMLIonNavSetRootElement;
-    new (): HTMLIonNavSetRootElement;
+  interface HTMLIonNavLinkElement extends Components.IonNavLink, HTMLStencilElement {}
+  var HTMLIonNavLinkElement: {
+    prototype: HTMLIonNavLinkElement;
+    new (): HTMLIonNavLinkElement;
   };
 
   interface HTMLIonNoteElement extends Components.IonNote, HTMLStencilElement {}
@@ -3157,6 +3287,12 @@ declare global {
   var HTMLIonRouterElement: {
     prototype: HTMLIonRouterElement;
     new (): HTMLIonRouterElement;
+  };
+
+  interface HTMLIonRouterLinkElement extends Components.IonRouterLink, HTMLStencilElement {}
+  var HTMLIonRouterLinkElement: {
+    prototype: HTMLIonRouterLinkElement;
+    new (): HTMLIonRouterLinkElement;
   };
 
   interface HTMLIonRouterOutletElement extends Components.IonRouterOutlet, HTMLStencilElement {}
@@ -3319,7 +3455,6 @@ declare global {
     'ion-action-sheet-controller': HTMLIonActionSheetControllerElement;
     'ion-alert': HTMLIonAlertElement;
     'ion-alert-controller': HTMLIonAlertControllerElement;
-    'ion-anchor': HTMLIonAnchorElement;
     'ion-app': HTMLIonAppElement;
     'ion-avatar': HTMLIonAvatarElement;
     'ion-back-button': HTMLIonBackButtonElement;
@@ -3365,9 +3500,7 @@ declare global {
     'ion-modal': HTMLIonModalElement;
     'ion-modal-controller': HTMLIonModalControllerElement;
     'ion-nav': HTMLIonNavElement;
-    'ion-nav-pop': HTMLIonNavPopElement;
-    'ion-nav-push': HTMLIonNavPushElement;
-    'ion-nav-set-root': HTMLIonNavSetRootElement;
+    'ion-nav-link': HTMLIonNavLinkElement;
     'ion-note': HTMLIonNoteElement;
     'ion-picker': HTMLIonPickerElement;
     'ion-picker-column': HTMLIonPickerColumnElement;
@@ -3386,6 +3519,7 @@ declare global {
     'ion-route': HTMLIonRouteElement;
     'ion-route-redirect': HTMLIonRouteRedirectElement;
     'ion-router': HTMLIonRouterElement;
+    'ion-router-link': HTMLIonRouterLinkElement;
     'ion-router-outlet': HTMLIonRouterOutletElement;
     'ion-row': HTMLIonRowElement;
     'ion-searchbar': HTMLIonSearchbarElement;
@@ -3452,7 +3586,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the alert has dismissed.
     */
@@ -3474,7 +3608,7 @@ declare namespace LocalJSX {
     */
     'subHeader'?: string;
     /**
-    * If `true`, the action sheet will be translucent. Only applies when the mode is `"ios"` and the device supports backdrop-filter.
+    * If `true`, the action sheet will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
@@ -3523,7 +3657,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the alert has dismissed.
     */
@@ -3545,25 +3679,11 @@ declare namespace LocalJSX {
     */
     'subHeader'?: string;
     /**
-    * If `true`, the alert will be translucent.
+    * If `true`, the alert will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
   interface IonAlertController {}
-  interface IonAnchor {
-    /**
-    * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
-    */
-    'color'?: Color;
-    /**
-    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
-    */
-    'href'?: string;
-    /**
-    * When using a router, it specifies the transition direction when navigating to another page using `href`.
-    */
-    'routerDirection'?: RouterDirection;
-  }
   interface IonApp {}
   interface IonAvatar {}
   interface IonBackButton {
@@ -3576,17 +3696,25 @@ declare namespace LocalJSX {
     */
     'defaultHref'?: string;
     /**
+    * If `true`, the user cannot interact with the button.
+    */
+    'disabled'?: boolean;
+    /**
     * The icon name to use for the back button.
     */
     'icon'?: string | null;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The text to display in the back button.
     */
     'text'?: string | null;
+    /**
+    * The type of the button.
+    */
+    'type'?: 'submit' | 'reset' | 'button';
   }
   interface IonBackdrop {
     /**
@@ -3614,7 +3742,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonButton {
     /**
@@ -3630,6 +3758,10 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download'?: string | undefined;
+    /**
     * Set to `"block"` for a full-width button or to `"full"` for a full-width button without left and right borders.
     */
     'expand'?: 'full' | 'block';
@@ -3640,11 +3772,11 @@ declare namespace LocalJSX {
     /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href'?: string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted when the button loses focus.
     */
@@ -3653,6 +3785,10 @@ declare namespace LocalJSX {
     * Emitted when the button has focus.
     */
     'onIonFocus'?: (event: CustomEvent<void>) => void;
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
@@ -3670,26 +3806,67 @@ declare namespace LocalJSX {
     */
     'strong'?: boolean;
     /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
+    /**
     * The type of the button.
     */
     'type'?: 'submit' | 'reset' | 'button';
   }
-  interface IonButtons {}
+  interface IonButtons {
+    /**
+    * If true, buttons will disappear when its parent toolbar has fully collapsed if the toolbar is not the first toolbar. If the toolbar is the first toolbar, the buttons will be hidden and will only be shown once all toolbars have fully collapsed.  Only applies in `ios` mode with `collapse` set to `true` on `ion-header`.  Typically used for [Collapsible Large Titles](https://ionicframework.com/docs/api/title#collapsible-large-titles)
+    */
+    'collapse'?: boolean;
+  }
   interface IonCard {
+    /**
+    * If `true`, a button tag will be rendered and the card will be tappable.
+    */
+    'button'?: boolean;
     /**
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
     'color'?: Color;
     /**
+    * If `true`, the user cannot interact with the card.
+    */
+    'disabled'?: boolean;
+    /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download'?: string | undefined;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href'?: string | undefined;
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
+    /**
+    * When using a router, it specifies the transition direction when navigating to another page using `href`.
+    */
+    'routerDirection'?: RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
+    /**
+    * The type of the button. Only used when an `onclick` or `button` property is present.
+    */
+    'type'?: 'submit' | 'reset' | 'button';
   }
   interface IonCardContent {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCardHeader {
     /**
@@ -3699,9 +3876,9 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the card header will be translucent.
+    * If `true`, the card header will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
@@ -3713,7 +3890,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCardTitle {
     /**
@@ -3723,7 +3900,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonCheckbox {
     /**
@@ -3745,7 +3922,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -3775,7 +3952,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Display an outline style button.
     */
@@ -3965,7 +4142,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Full names for each month name. This can be used to provide locale month names. Defaults to English.
     */
@@ -4055,13 +4232,17 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download'?: string | undefined;
+    /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href'?: string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted when the button loses focus.
     */
@@ -4070,6 +4251,10 @@ declare namespace LocalJSX {
     * Emitted when the button has focus.
     */
     'onIonFocus'?: (event: CustomEvent<void>) => void;
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
@@ -4083,7 +4268,11 @@ declare namespace LocalJSX {
     */
     'size'?: 'small';
     /**
-    * If `true`, the fab button will be translucent.
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
+    /**
+    * If `true`, the fab button will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
     /**
@@ -4105,9 +4294,9 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the footer will be translucent. Note: In order to scroll content behind the footer, the `fullscreen` attribute needs to be set on the content.
+    * If `true`, the footer will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).  Note: In order to scroll content behind the footer, the `fullscreen` attribute needs to be set on the content.
     */
     'translucent'?: boolean;
   }
@@ -4119,11 +4308,15 @@ declare namespace LocalJSX {
   }
   interface IonHeader {
     /**
+    * Describes the scroll effect that will be applied to the header `condense` only applies in iOS mode.  Typically used for [Collapsible Large Titles](https://ionicframework.com/docs/api/title#collapsible-large-titles)
+    */
+    'collapse'?: 'condense';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
-    * If `true`, the header will be translucent. Note: In order to scroll content behind the header, the `fullscreen` attribute needs to be set on the content.
+    * If `true`, the header will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).  Note: In order to scroll content behind the header, the `fullscreen` attribute needs to be set on the content.
     */
     'translucent'?: boolean;
   }
@@ -4137,11 +4330,15 @@ declare namespace LocalJSX {
     */
     'onIonError'?: (event: CustomEvent<void>) => void;
     /**
-    * Emitted when the img src has been set
+    * Emitted when the image has finished loading
     */
     'onIonImgDidLoad'?: (event: CustomEvent<void>) => void;
     /**
-    * The image URL. This attribute is mandatory for the <img> element.
+    * Emitted when the img src has been set
+    */
+    'onIonImgWillLoad'?: (event: CustomEvent<void>) => void;
+    /**
+    * The image URL. This attribute is mandatory for the `<img>` element.
     */
     'src'?: string;
   }
@@ -4215,9 +4412,9 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
-    * A hint to the browser for which keyboard to display. This attribute applies when the value of the type attribute is `"text"`, `"password"`, `"email"`, or `"url"`. Possible values are: `"verbatim"`, `"latin"`, `"latin-name"`, `"latin-prose"`, `"full-width-latin"`, `"kana"`, `"katakana"`, `"numeric"`, `"tel"`, `"email"`, `"url"`.
+    * A hint to the browser for which keyboard to display. Possible values: `"none"`, `"text"`, `"tel"`, `"url"`, `"email"`, `"numeric"`, `"decimal"`, and `"search"`.
     */
-    'inputmode'?: string;
+    'inputmode'?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     /**
     * The maximum value, which must not be less than its minimum (min attribute) value.
     */
@@ -4237,7 +4434,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * If `true`, the user can enter more than one value. This attribute applies when the type attribute is set to `"email"` or `"file"`, otherwise it is ignored.
     */
@@ -4259,7 +4456,7 @@ declare namespace LocalJSX {
     */
     'onIonFocus'?: (event: CustomEvent<void>) => void;
     /**
-    * Emitted when a keyboard input ocurred.
+    * Emitted when a keyboard input occurred.
     */
     'onIonInput'?: (event: CustomEvent<KeyboardEvent>) => void;
     /**
@@ -4321,9 +4518,13 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download'?: string | undefined;
+    /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href'?: string | undefined;
     /**
     * How the bottom border should be displayed on the item.
     */
@@ -4331,11 +4532,19 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
     /**
     * When using a router, it specifies the transition direction when navigating to another page using `href`.
     */
     'routerDirection'?: RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
     /**
     * The type of the button. Only used when an `onclick` or `button` property is present.
     */
@@ -4349,7 +4558,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * When it's set to `true`, the item-divider will stay visible when it reaches the top of the viewport until the next `ion-item-divider` replaces it.  This feature relies in `position:sticky`: https://caniuse.com/#feat=css-sticky
     */
@@ -4366,17 +4575,33 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
+    */
+    'download'?: string | undefined;
+    /**
     * If `true`, the option will expand to take up the available width and cover any other options.
     */
     'expandable'?: boolean;
     /**
     * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
     */
-    'href'?: string;
+    'href'?: string | undefined;
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
+    /**
+    * The type of the button.
+    */
+    'type'?: 'submit' | 'reset' | 'button';
   }
   interface IonItemOptions {
     /**
@@ -4390,7 +4615,7 @@ declare namespace LocalJSX {
   }
   interface IonItemSliding {
     /**
-    * If `true`, the user cannot interact with the sliding-item.
+    * If `true`, the user cannot interact with the sliding item.
     */
     'disabled'?: boolean;
     /**
@@ -4406,7 +4631,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The position determines where and how the label behaves inside an item.
     */
@@ -4424,7 +4649,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonListHeader {
     /**
@@ -4432,9 +4657,13 @@ declare namespace LocalJSX {
     */
     'color'?: Color;
     /**
+    * How the bottom border should be displayed on the list header.
+    */
+    'lines'?: 'full' | 'inset' | 'none';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonLoading {
     /**
@@ -4472,7 +4701,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the loading has dismissed.
     */
@@ -4498,7 +4727,7 @@ declare namespace LocalJSX {
     */
     'spinner'?: SpinnerTypes | null;
     /**
-    * If `true`, the loading indicator will be translucent.
+    * If `true`, the loading indicator will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
@@ -4545,7 +4774,7 @@ declare namespace LocalJSX {
     */
     'swipeGesture'?: boolean;
     /**
-    * The animation type of the menu. Available options: `"overlay"`, `"reveal"`, `"push"`. Custom animations can be registered by the menu controller.
+    * The display type of the menu. Available options: `"overlay"`, `"reveal"`, `"push"`.
     */
     'type'?: string;
   }
@@ -4559,13 +4788,17 @@ declare namespace LocalJSX {
     */
     'color'?: Color;
     /**
+    * If `true`, the user cannot interact with the menu button.
+    */
+    'disabled'?: boolean;
+    /**
     * Optional property that maps to a Menu's `menuId` prop. Can also be `start` or `end` for the menu side. This is used to find the correct menu to toggle
     */
     'menu'?: string;
     /**
-    * The mode determines which platform styles to use.
+    * The type of the button.
     */
-    'mode'?: Mode;
+    'type'?: 'submit' | 'reset' | 'button';
   }
   interface IonMenuController {}
   interface IonMenuToggle {
@@ -4614,7 +4847,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the modal has dismissed.
     */
@@ -4632,9 +4865,17 @@ declare namespace LocalJSX {
     */
     'onIonModalWillPresent'?: (event: CustomEvent<void>) => void;
     /**
+    * The element that presented the modal. This is used for card presentation effects and for stacking multiple modals on top of each other. Only applies in iOS mode.
+    */
+    'presentingElement'?: HTMLElement;
+    /**
     * If `true`, a backdrop will be displayed behind the modal.
     */
     'showBackdrop'?: boolean;
+    /**
+    * If `true`, the modal can be swiped to dismiss. Only applies in iOS mode.
+    */
+    'swipeToClose'?: boolean;
   }
   interface IonModalController {}
   interface IonNav {
@@ -4667,26 +4908,19 @@ declare namespace LocalJSX {
     */
     'swipeGesture'?: boolean;
   }
-  interface IonNavPop {}
-  interface IonNavPush {
+  interface IonNavLink {
     /**
-    * Component to navigate to
+    * Component to navigate to. Only used if the `routerDirection` is `"forward"` or `"root"`.
     */
     'component'?: NavComponent;
     /**
-    * Data you want to pass to the component as props
+    * Data you want to pass to the component as props. Only used if the `"routerDirection"` is `"forward"` or `"root"`.
     */
     'componentProps'?: ComponentProps;
-  }
-  interface IonNavSetRoot {
     /**
-    * Component you want to make root for the navigation stack
+    * The transition direction when navigating to another page.
     */
-    'component'?: NavComponent;
-    /**
-    * Data you want to pass to the component as props
-    */
-    'componentProps'?: ComponentProps;
+    'routerDirection'?: RouterDirection;
   }
   interface IonNote {
     /**
@@ -4696,7 +4930,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonPicker {
     /**
@@ -4738,7 +4972,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the picker has dismissed.
     */
@@ -4807,7 +5041,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the popover has dismissed.
     */
@@ -4829,7 +5063,7 @@ declare namespace LocalJSX {
     */
     'showBackdrop'?: boolean;
     /**
-    * If `true`, the popover will be translucent.
+    * If `true`, the popover will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
@@ -4846,7 +5080,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * If true, reverse the progress bar direction.
     */
@@ -4876,7 +5110,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -4944,7 +5178,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -4984,7 +5218,7 @@ declare namespace LocalJSX {
   }
   interface IonRefresher {
     /**
-    * Time it takes to close the refresher.
+    * Time it takes to close the refresher. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'closeDuration'?: string;
     /**
@@ -5004,23 +5238,27 @@ declare namespace LocalJSX {
     */
     'onIonStart'?: (event: CustomEvent<void>) => void;
     /**
-    * The maximum distance of the pull until the refresher will automatically go into the `refreshing` state. Defaults to the result of `pullMin + 60`.
+    * How much to multiply the pull speed by. To slow the pull animation down, pass a number less than `1`. To speed up the pull, pass a number greater than `1`. The default value is `1` which is equal to the speed of the cursor. If a negative value is passed in, the factor will be `1` instead.  For example: If the value passed is `1.2` and the content is dragged by `10` pixels, instead of `10` pixels the content will be pulled by `12` pixels (an increase of 20 percent). If the value passed is `0.8`, the dragged amount will be `8` pixels, less than the amount the cursor has moved.  Does not apply when the refresher content uses a spinner, enabling the native refresher.
+    */
+    'pullFactor'?: number;
+    /**
+    * The maximum distance of the pull until the refresher will automatically go into the `refreshing` state. Defaults to the result of `pullMin + 60`. Does not apply when  the refresher content uses a spinner, enabling the native refresher.
     */
     'pullMax'?: number;
     /**
-    * The minimum distance the user must pull down until the refresher will go into the `refreshing` state.
+    * The minimum distance the user must pull down until the refresher will go into the `refreshing` state. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'pullMin'?: number;
     /**
-    * Time it takes the refresher to to snap back to the `refreshing` state.
+    * Time it takes the refresher to to snap back to the `refreshing` state. Does not apply when the refresher content uses a spinner, enabling the native refresher.
     */
     'snapbackDuration'?: string;
   }
   interface IonRefresherContent {
     /**
-    * A static icon to display when you begin to pull down
+    * A static icon or a spinner to display when you begin to pull down. A spinner name can be provided to gradually show tick marks when pulling down on iOS devices.
     */
-    'pullingIcon'?: string | null;
+    'pullingIcon'?: SpinnerTypes | string | null;
     /**
     * The text you want to display when you begin to pull down. `pullingText` can accept either plaintext or HTML as a string. To display characters normally reserved for HTML, they must be escaped. For example `<Ionic>` would become `&lt;Ionic&gt;`  For more information: [Security Documentation](https://ionicframework.com/docs/faq/security)
     */
@@ -5101,6 +5339,28 @@ declare namespace LocalJSX {
     */
     'useHash'?: boolean;
   }
+  interface IonRouterLink {
+    /**
+    * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
+    */
+    'color'?: Color;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href'?: string | undefined;
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
+    /**
+    * When using a router, it specifies the transition direction when navigating to another page using `href`.
+    */
+    'routerDirection'?: RouterDirection;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
+  }
   interface IonRouterOutlet {
     /**
     * If `true`, the router-outlet should animate the transition of components.
@@ -5110,6 +5370,10 @@ declare namespace LocalJSX {
     * By default `ion-nav` animates transition between pages based in the mode (ios or material design). However, this property allows to create custom transition using `AnimateBuilder` functions.
     */
     'animation'?: AnimationBuilder;
+    /**
+    * The mode determines which platform styles to use.
+    */
+    'mode'?: "ios" | "md";
   }
   interface IonRow {}
   interface IonSearchbar {
@@ -5126,7 +5390,7 @@ declare namespace LocalJSX {
     */
     'autocorrect'?: 'on' | 'off';
     /**
-    * Set the cancel button icon. Only applies to `md` mode.
+    * Set the cancel button icon. Only applies to `md` mode. Defaults to `"arrow-back-sharp"`.
     */
     'cancelButtonIcon'?: string;
     /**
@@ -5134,7 +5398,7 @@ declare namespace LocalJSX {
     */
     'cancelButtonText'?: string;
     /**
-    * Set the clear icon. Defaults to `"close-circle"` for `ios` and `"close"` for `md`.
+    * Set the clear icon. Defaults to `"close-circle"` for `ios` and `"close-sharp"` for `md`.
     */
     'clearIcon'?: string;
     /**
@@ -5150,9 +5414,13 @@ declare namespace LocalJSX {
     */
     'disabled'?: boolean;
     /**
+    * A hint to the browser for which keyboard to display. Possible values: `"none"`, `"text"`, `"tel"`, `"url"`, `"email"`, `"numeric"`, `"decimal"`, and `"search"`.
+    */
+    'inputmode'?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+    /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted when the input loses focus.
     */
@@ -5174,7 +5442,7 @@ declare namespace LocalJSX {
     */
     'onIonFocus'?: (event: CustomEvent<void>) => void;
     /**
-    * Emitted when a keyboard input ocurred.
+    * Emitted when a keyboard input occurred.
     */
     'onIonInput'?: (event: CustomEvent<KeyboardEvent>) => void;
     /**
@@ -5182,13 +5450,13 @@ declare namespace LocalJSX {
     */
     'placeholder'?: string;
     /**
-    * The icon to use as the search icon.
+    * The icon to use as the search icon. Defaults to `"search-outline"` in `ios` mode and `"search-sharp"` in `md` mode.
     */
     'searchIcon'?: string;
     /**
-    * If `true`, show the cancel button.
+    * Sets the behavior for the cancel button. Defaults to `"never"`. Setting to `"focus"` shows the cancel button on focus. Setting to `"never"` hides the cancel button. Setting to `"always"` shows the cancel button regardless of focus state.
     */
-    'showCancelButton'?: boolean;
+    'showCancelButton'?: 'never' | 'focus' | 'always';
     /**
     * If `true`, enable spellcheck on the input.
     */
@@ -5214,15 +5482,11 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted when the value property has changed.
     */
     'onIonChange'?: (event: CustomEvent<SegmentChangeEventDetail>) => void;
-    /**
-    * Emitted when the styles change.
-    */
-    'onIonStyle'?: (event: CustomEvent<StyleEventDetail>) => void;
     /**
     * If `true`, the segment buttons will overflow and the user can swipe to see them.
     */
@@ -5248,11 +5512,15 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted when the segment button is clicked.
     */
     'onIonSelect'?: (event: CustomEvent<void>) => void;
+    /**
+    * The type of the button.
+    */
+    'type'?: 'submit' | 'reset' | 'button';
     /**
     * The value of the segment button.
     */
@@ -5282,7 +5550,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * If `true`, the select can accept multiple values.
     */
@@ -5328,7 +5596,7 @@ declare namespace LocalJSX {
     /**
     * Additional classes to apply for custom CSS. If multiple classes are provided they should be separated by spaces.
     */
-    'class'?: string | { [className: string]: boolean; } | undefined;
+    'customCssClass'?: string | { [className: string]: boolean; } | undefined;
     /**
     * If `true`, the user cannot interact with the select option.
     */
@@ -5365,17 +5633,13 @@ declare namespace LocalJSX {
     * If `true`, the skeleton text will animate.
     */
     'animated'?: boolean;
-    /**
-    * @deprecated - Use CSS instead. The width of the skeleton text. If supplied, it will override the CSS style.
-    */
-    'width'?: string;
   }
   interface IonSlide {}
   interface IonSlides {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the active slide has changed.
     */
@@ -5473,7 +5737,7 @@ declare namespace LocalJSX {
   }
   interface IonSplitPane {
     /**
-    * The content `id` of the split-pane's main content. This property can be used instead of the `[main]` attribute to select the `main` content of the split-pane.
+    * The content `id` of the split-pane's main content.
     */
     'contentId'?: string;
     /**
@@ -5507,25 +5771,29 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The selected tab component
     */
     'selectedTab'?: string;
     /**
-    * If `true`, the tab bar will be translucent.
+    * If `true`, the tab bar will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
   interface IonTabButton {
     /**
-    * The selected tab component
+    * If `true`, the user cannot interact with the tab button.
     */
     'disabled'?: boolean;
     /**
-    * The URL which will be used as the `href` within this tab's button anchor.
+    * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
     */
-    'href'?: string;
+    'download'?: string | undefined;
+    /**
+    * Contains a URL or a URL fragment that the hyperlink points to. If this property is set, an anchor tag will be rendered.
+    */
+    'href'?: string | undefined;
     /**
     * Set the layout of the text and icon in the tab bar. It defaults to `'icon-top'`.
     */
@@ -5533,7 +5801,11 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
+    /**
+    * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+    */
+    'rel'?: string | undefined;
     /**
     * The selected tab component
     */
@@ -5542,6 +5814,10 @@ declare namespace LocalJSX {
     * A tab id must be provided for each `ion-tab`. It's used internally to reference the selected tab or by the router to switch between them.
     */
     'tab'?: string;
+    /**
+    * Specifies where to display the linked URL. Only applies when an `href` is provided. Special keywords: `"_blank"`, `"_self"`, `"_parent"`, `"_top"`.
+    */
+    'target'?: string | undefined;
   }
   interface IonTabs {
     /**
@@ -5561,9 +5837,13 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonTextarea {
+    /**
+    * If `true`, the element height will increase based on the value.
+    */
+    'autoGrow'?: boolean;
     /**
     * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.
     */
@@ -5603,7 +5883,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -5621,7 +5901,7 @@ declare namespace LocalJSX {
     */
     'onIonFocus'?: (event: CustomEvent<void>) => void;
     /**
-    * Emitted when a keyboard input ocurred.
+    * Emitted when a keyboard input occurred.
     */
     'onIonInput'?: (event: CustomEvent<KeyboardEvent>) => void;
     /**
@@ -5659,6 +5939,10 @@ declare namespace LocalJSX {
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
     'color'?: Color;
+    /**
+    * The size of the toolbar title.
+    */
+    'size'?: 'large' | 'small';
   }
   interface IonToast {
     /**
@@ -5669,10 +5953,6 @@ declare namespace LocalJSX {
     * An array of buttons for the toast.
     */
     'buttons'?: (ToastButton | string)[];
-    /**
-    * Text to display in the close button.
-    */
-    'closeButtonText'?: string;
     /**
     * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
     */
@@ -5708,7 +5988,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * Emitted after the toast has dismissed.
     */
@@ -5730,11 +6010,7 @@ declare namespace LocalJSX {
     */
     'position'?: 'top' | 'bottom' | 'middle';
     /**
-    * If `true`, the close button will be displayed.
-    */
-    'showCloseButton'?: boolean;
-    /**
-    * If `true`, the toast will be translucent.
+    * If `true`, the toast will be translucent. Only applies when the mode is `"ios"` and the device supports [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility).
     */
     'translucent'?: boolean;
   }
@@ -5755,7 +6031,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
     /**
     * The name of the control, which is submitted with the form data.
     */
@@ -5785,7 +6061,7 @@ declare namespace LocalJSX {
     /**
     * The mode determines which platform styles to use.
     */
-    'mode'?: Mode;
+    'mode'?: "ios" | "md";
   }
   interface IonVirtualScroll {
     /**
@@ -5805,9 +6081,17 @@ declare namespace LocalJSX {
     */
     'footerFn'?: HeaderFn;
     /**
+    * An optional function that maps each item footer within their height.
+    */
+    'footerHeight'?: FooterHeightFn;
+    /**
     * Section headers and the data used within its given template can be dynamically created by passing a function to `headerFn`. For example, a large list of contacts usually has dividers between each letter in the alphabet. App's can provide their own custom `headerFn` which is called with each record within the dataset. The logic within the header function can decide if the header template should be used, and what data to give to the header template. The function must return `null` if a header cell shouldn't be created.
     */
     'headerFn'?: HeaderFn;
+    /**
+    * An optional function that maps each item header within their height.
+    */
+    'headerHeight'?: HeaderHeightFn;
     /**
     * An optional function that maps each item within their height. When this function is provides, heavy optimizations and fast path can be taked by `ion-virtual-scroll` leading to massive performance improvements.  This function allows to skip all DOM reads, which can be Doing so leads to massive performance
     */
@@ -5839,7 +6123,6 @@ declare namespace LocalJSX {
     'ion-action-sheet-controller': IonActionSheetController;
     'ion-alert': IonAlert;
     'ion-alert-controller': IonAlertController;
-    'ion-anchor': IonAnchor;
     'ion-app': IonApp;
     'ion-avatar': IonAvatar;
     'ion-back-button': IonBackButton;
@@ -5885,9 +6168,7 @@ declare namespace LocalJSX {
     'ion-modal': IonModal;
     'ion-modal-controller': IonModalController;
     'ion-nav': IonNav;
-    'ion-nav-pop': IonNavPop;
-    'ion-nav-push': IonNavPush;
-    'ion-nav-set-root': IonNavSetRoot;
+    'ion-nav-link': IonNavLink;
     'ion-note': IonNote;
     'ion-picker': IonPicker;
     'ion-picker-column': IonPickerColumn;
@@ -5906,6 +6187,7 @@ declare namespace LocalJSX {
     'ion-route': IonRoute;
     'ion-route-redirect': IonRouteRedirect;
     'ion-router': IonRouter;
+    'ion-router-link': IonRouterLink;
     'ion-router-outlet': IonRouterOutlet;
     'ion-row': IonRow;
     'ion-searchbar': IonSearchbar;
@@ -5945,7 +6227,6 @@ declare module "@stencil/core" {
       'ion-action-sheet-controller': LocalJSX.IonActionSheetController & JSXBase.HTMLAttributes<HTMLIonActionSheetControllerElement>;
       'ion-alert': LocalJSX.IonAlert & JSXBase.HTMLAttributes<HTMLIonAlertElement>;
       'ion-alert-controller': LocalJSX.IonAlertController & JSXBase.HTMLAttributes<HTMLIonAlertControllerElement>;
-      'ion-anchor': LocalJSX.IonAnchor & JSXBase.HTMLAttributes<HTMLIonAnchorElement>;
       'ion-app': LocalJSX.IonApp & JSXBase.HTMLAttributes<HTMLIonAppElement>;
       'ion-avatar': LocalJSX.IonAvatar & JSXBase.HTMLAttributes<HTMLIonAvatarElement>;
       'ion-back-button': LocalJSX.IonBackButton & JSXBase.HTMLAttributes<HTMLIonBackButtonElement>;
@@ -5991,9 +6272,7 @@ declare module "@stencil/core" {
       'ion-modal': LocalJSX.IonModal & JSXBase.HTMLAttributes<HTMLIonModalElement>;
       'ion-modal-controller': LocalJSX.IonModalController & JSXBase.HTMLAttributes<HTMLIonModalControllerElement>;
       'ion-nav': LocalJSX.IonNav & JSXBase.HTMLAttributes<HTMLIonNavElement>;
-      'ion-nav-pop': LocalJSX.IonNavPop & JSXBase.HTMLAttributes<HTMLIonNavPopElement>;
-      'ion-nav-push': LocalJSX.IonNavPush & JSXBase.HTMLAttributes<HTMLIonNavPushElement>;
-      'ion-nav-set-root': LocalJSX.IonNavSetRoot & JSXBase.HTMLAttributes<HTMLIonNavSetRootElement>;
+      'ion-nav-link': LocalJSX.IonNavLink & JSXBase.HTMLAttributes<HTMLIonNavLinkElement>;
       'ion-note': LocalJSX.IonNote & JSXBase.HTMLAttributes<HTMLIonNoteElement>;
       'ion-picker': LocalJSX.IonPicker & JSXBase.HTMLAttributes<HTMLIonPickerElement>;
       'ion-picker-column': LocalJSX.IonPickerColumn & JSXBase.HTMLAttributes<HTMLIonPickerColumnElement>;
@@ -6012,6 +6291,7 @@ declare module "@stencil/core" {
       'ion-route': LocalJSX.IonRoute & JSXBase.HTMLAttributes<HTMLIonRouteElement>;
       'ion-route-redirect': LocalJSX.IonRouteRedirect & JSXBase.HTMLAttributes<HTMLIonRouteRedirectElement>;
       'ion-router': LocalJSX.IonRouter & JSXBase.HTMLAttributes<HTMLIonRouterElement>;
+      'ion-router-link': LocalJSX.IonRouterLink & JSXBase.HTMLAttributes<HTMLIonRouterLinkElement>;
       'ion-router-outlet': LocalJSX.IonRouterOutlet & JSXBase.HTMLAttributes<HTMLIonRouterOutletElement>;
       'ion-row': LocalJSX.IonRow & JSXBase.HTMLAttributes<HTMLIonRowElement>;
       'ion-searchbar': LocalJSX.IonSearchbar & JSXBase.HTMLAttributes<HTMLIonSearchbarElement>;
